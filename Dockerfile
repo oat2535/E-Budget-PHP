@@ -1,19 +1,20 @@
-FROM dunglas/frankenphp:1-php8.3-bookworm
+FROM dunglas/frankenphp:1-php8.3
 
 # Environment configuration
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     SERVER_NAME=":8000" \
     PHP_INI_SCAN_DIR=":$PHP_INI_DIR/conf.d"
 
-# Install required PHP extensions (Debian pre-compiled binaries via install-php-extensions)
-RUN install-php-extensions \
-        pdo_pgsql \
-        pgsql \
-        zip \
-        opcache \
-        bcmath \
-        pcntl \
-        intl
+# Install required PHP extensions for Laravel (PostgreSQL PDO and Zip for Excel export)
+# Streamlined to essential extensions with resilient native fallback
+RUN set -eux; \
+    install-php-extensions pdo_pgsql zip \
+    || ( \
+        apt-get update && \
+        apt-get install -y --no-install-recommends libpq-dev libzip-dev && \
+        docker-php-ext-install -j$(nproc) pdo_pgsql zip && \
+        apt-get clean && rm -rf /var/lib/apt/lists/* \
+    )
 
 # Install Composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
