@@ -2,8 +2,7 @@ FROM dunglas/frankenphp:1-php8.3
 
 # Environment configuration
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
-    SERVER_NAME=":8000" \
-    PHP_INI_SCAN_DIR=":$PHP_INI_DIR/conf.d"
+    SERVER_NAME=":8000"
 
 # Install required PHP extensions for Laravel (PostgreSQL PDO and Zip for Excel export)
 # Streamlined to essential extensions with resilient native fallback
