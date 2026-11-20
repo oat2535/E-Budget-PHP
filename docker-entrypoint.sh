@@ -13,6 +13,7 @@ chmod -R 777 storage bootstrap/cache 2>/dev/null || true
 # 2. Optimize and cache Laravel configuration, routes, and views for production/uat
 if [ "$APP_ENV" = "production" ] || [ "$APP_ENV" = "uat" ]; then
     echo "Caching configuration, routes, and views for environment: $APP_ENV..."
+    php artisan optimize:clear 2>/dev/null || true
     php artisan config:cache || true
     php artisan route:cache || true
     php artisan view:cache || true
