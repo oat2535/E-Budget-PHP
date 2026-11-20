@@ -102,6 +102,22 @@
             .login-btn:active {
                 transform: translateY(0);
             }
+
+            @media (max-width: 767.98px) {
+                .sidebar-bg {
+                    display: none;
+                }
+                .login-card-wrapper {
+                    margin-left: 0 !important;
+                    width: 100% !important;
+                    padding-top: 100px !important;
+                    padding-bottom: 2rem !important;
+                }
+                .login-card .border-start {
+                    border-left: 0 !important;
+                    border-top: 1px solid #e3e6ec !important;
+                }
+            }
         </style>
     </head>
     <body>
@@ -149,10 +165,10 @@
         </div>
 
         @php
-            $hasAlert = session('error') || session('warning') || $errors->any();
+            $hasAlert = !empty(session('error')) || !empty(session('warning')) || (isset($errors) && $errors->any());
             $alertType = session('warning') ? 'warning' : 'error';
             $alertTitle = session('warning') ? 'แจ้งเตือน' : 'เข้าสู่ระบบไม่สำเร็จ';
-            $alertMsg = session('error') ?? session('warning') ?? ($errors->first() ?: '');
+            $alertMsg = session('error') ?? session('warning') ?? (isset($errors) ? ($errors->first() ?: '') : '');
         @endphp
         @if($hasAlert)
             <!-- SweetAlert2 loaded on-demand only when alerts are present -->

@@ -313,34 +313,41 @@
 
 <div class="container-fluid px-4 mt-n10">
     <div class="row">
-        @foreach($categories as $category)
+        @php
+            $cardColors = ['warning', 'success', 'danger', 'primary', 'info', 'secondary'];
+        @endphp
+        @forelse($categories as $index => $category)
+        @php
+            $card_color = $cardColors[$index % count($cardColors)];
+            $catCode = is_array($category) ? ($category['category_code'] ?? '') : ($category->category_code ?? '');
+            $catName = is_array($category) ? ($category['category_name'] ?? '') : ($category->category_name ?? '');
+        @endphp
         <div class="col-lg-4 mb-4">
-            {% cycle 'warning' 'success' 'danger' 'primary' 'info' 'secondary' as card_color silent %}
-            <a href="javascript:void(0);" onclick="fetchDocuments('{{ (is_array($category) ? ($category['category_code'] ?? '') : ($category->category_code ?? '')) }}')" class="text-decoration-none">
-                <div class="card h-100 border-start-lg border-start-{{ $card_color ?? '' }} card-lift shadow-sm">
+            <a href="javascript:void(0);" onclick="fetchDocuments('{{ $catCode }}')" class="text-decoration-none">
+                <div class="card h-100 border-start-lg border-start-{{ $card_color }} card-lift shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="small fw-bold text-{{ $card_color ?? '' }} text-uppercase mb-1">{{ (is_array($category) ? ($category['category_code'] ?? '') : ($category->category_code ?? '')) }}</div>
-                                <div class="h4 mb-0 fw-bold text-dark">{{ (is_array($category) ? ($category['category_name'] ?? '') : ($category->category_name ?? '')) }}</div>
+                                <div class="small fw-bold text-{{ $card_color }} text-uppercase mb-1">{{ $catCode }}</div>
+                                <div class="h4 mb-0 fw-bold text-dark">{{ $catName }}</div>
                             </div>
-                            <div class="text-{{ $card_color ?? '' }} opacity-50">
+                            <div class="text-{{ $card_color }} opacity-50">
                                 <i data-feather="folder" style="width: 2em; height: 2em;"></i>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer d-flex align-items-center justify-content-between small shadow-none bg-transparent">
-                        <span class="text-{{ $card_color ?? '' }}">View Budgets</span>
-                        <div class="text-{{ $card_color ?? '' }}"><i data-feather="arrow-right"></i></div>
+                        <span class="text-{{ $card_color }}">View Budgets</span>
+                        <div class="text-{{ $card_color }}"><i data-feather="arrow-right"></i></div>
                     </div>
                 </div>
             </a>
         </div>
-        {% empty %}
+        @empty
         <div class="col-12">
             <div class="alert alert-warning">No Categories Found.</div>
         </div>
-        @endforeach
+        @endforelse
     </div>
 
     <!-- Table placeholder for selected category -->

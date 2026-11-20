@@ -54,28 +54,28 @@ class BudgetListController extends Controller
 
         $costCenters = BudgetService::getCostCentersJson();
         $glTemplateRows = GlActualTemplateRow::orderBy('row_order')->get()->toArray();
-        $allBranches = BudgetRoleService::GL_ACTUAL_TEMPLATE_BRANCHES;
+        $allBranches = \App\Services\DashboardService::getAllBranches();
 
         $user = Auth::user();
         $isViewOnly = BudgetRoleService::isViewOnlyUser($request);
         $isPrivileged = BudgetRoleService::isPrivilegedUserAccount($user, $request);
 
-        return view('budget.budget_list', [
+        return view('budget.budget_list', array_merge([
             'categories' => $categories,
-            'vet_items_json' => $vetItems,
-            'non_vet_items_json' => $nonVetItems,
-            'med_items_json' => $medItems,
-            'comp_items_json' => $compItems,
-            'furniture_items_json' => $furnitureItems,
-            'tools_items_json' => $toolsItems,
-            'car_items_json' => $carItems,
-            'renovate_items_json' => $renovateItems,
-            'software_items_json' => $softwareItems,
+            'items_vet_json' => $vetItems,
+            'items_non_vet_json' => $nonVetItems,
+            'items_med_json' => $medItems,
+            'items_comp_json' => $compItems,
+            'items_furniture_json' => $furnitureItems,
+            'items_tools_json' => $toolsItems,
+            'items_car_json' => $carItems,
+            'items_renovate_json' => $renovateItems,
+            'items_software_json' => $softwareItems,
             'cost_centers_json' => $costCenters,
-            'gl_template_rows' => $glTemplateRows,
-            'all_branches' => $allBranches,
+            'glat_template_rows_json' => $glTemplateRows,
+            'glat_branches_json' => $allBranches,
             'is_view_only' => $isViewOnly,
             'is_privileged' => $isPrivileged,
-        ]);
+        ], BudgetRoleService::getBranchSelectionContext($request)));
     }
 }

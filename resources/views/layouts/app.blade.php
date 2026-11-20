@@ -18,10 +18,10 @@
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Medium.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-SemiBold.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Bold.otf') }}" crossorigin>
+        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_01" rel="stylesheet" />
+        <link href="{{ asset('static/budget_app/css/theme-override.css') }}?v=20261120_01" rel="stylesheet" />
+        <link href="{{ asset('static/budget_app/css/polish.css') }}?v=20261120_01" rel="stylesheet" />
         @yield('extra_css')
-        <link href="{{ asset('static/budget_app/css/styles.css') }}" rel="stylesheet" />
-        <link href="{{ asset('static/budget_app/css/theme-override.css') }}" rel="stylesheet" />
-        <link href="{{ asset('static/budget_app/css/polish.css') }}" rel="stylesheet" />
         <link rel="icon" type="image/jpeg" href="{{ asset('static/budget_app/assets/img/coins.jpg') }}" />
         <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js" crossorigin="anonymous"></script>
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous"></script>
@@ -256,7 +256,7 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="{{ asset('static/budget_app/js/scripts.js') }}"></script>
+        <script src="{{ asset('static/budget_app/js/scripts.js') }}?v=20261120_01"></script>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 const themeIcon = document.getElementById('themeToggleIcon');
@@ -296,32 +296,25 @@
                 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
                     if (localStorage.getItem('app-theme') === 'auto') updateTheme('auto');
                 });
-            });
 
-            // Sidenav collapse (used by "Add Budget" and its Manpower/Other
-            // Expenses/General Ledger sub-groups): deliberately NOT using
-            // Bootstrap's data-bs-toggle="collapse" here. That plugin animates
-            // the `height` property directly (reads scrollHeight, sets an
-            // inline px value), which is a layout property the browser
-            // reflows every frame rather than a compositable one like
-            // transform/opacity — no amount of easing/duration tuning on it
-            // reads as smooth. This toggles a class instead and lets CSS
-            // animate `grid-template-rows` (see .eb-collapse in polish.css),
-            // which is genuinely smoother.
-            function bindSidenavCollapseToggle(toggleId, panelId) {
-                const toggle = document.getElementById(toggleId);
-                const panel = document.getElementById(panelId);
-                if (!toggle || !panel) return;
-                toggle.addEventListener('click', () => {
-                    const isOpen = panel.classList.toggle('eb-collapse-open');
-                    toggle.classList.toggle('collapsed', !isOpen);
-                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                });
-            }
-            bindSidenavCollapseToggle('addBudgetToggle', 'collapseAddBudget');
-            bindSidenavCollapseToggle('manpowerGroupToggle', 'collapseManpowerGroup');
-            bindSidenavCollapseToggle('otherExpensesGroupToggle', 'collapseOtherExpensesGroup');
-            bindSidenavCollapseToggle('generalLedgerGroupToggle', 'collapseGeneralLedgerGroup');
+                // Sidenav collapse (used by "Add Budget" and its Manpower/Other
+                // Expenses/General Ledger sub-groups): deliberately NOT using
+                // Bootstrap's data-bs-toggle="collapse" here.
+                function bindSidenavCollapseToggle(toggleId, panelId) {
+                    const toggle = document.getElementById(toggleId);
+                    const panel = document.getElementById(panelId);
+                    if (!toggle || !panel) return;
+                    toggle.addEventListener('click', () => {
+                        const isOpen = panel.classList.toggle('eb-collapse-open');
+                        toggle.classList.toggle('collapsed', !isOpen);
+                        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    });
+                }
+                bindSidenavCollapseToggle('addBudgetToggle', 'collapseAddBudget');
+                bindSidenavCollapseToggle('manpowerGroupToggle', 'collapseManpowerGroup');
+                bindSidenavCollapseToggle('otherExpensesGroupToggle', 'collapseOtherExpensesGroup');
+                bindSidenavCollapseToggle('generalLedgerGroupToggle', 'collapseGeneralLedgerGroup');
+            });
 
             function confirmLogout() {
                 Swal.fire({
