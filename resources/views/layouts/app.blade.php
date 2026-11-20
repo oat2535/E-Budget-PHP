@@ -10,16 +10,15 @@
         <title>@yield('title', 'E-Budget')</title>
         <!-- Preload the Metropolis weights actually used on every page
              (confirmed by what the browser fetches on a normal load) so
-             they're ready as close to first paint as possible — this is
-             what makes font-display: optional (styles.css) actually land
-             on the branded font instead of falling back, rather than just
-             preventing the swap. -->
+             they're ready at first paint. Combined with font-display: block,
+             this guarantees zero layout shift (CLS) and ensures the branded
+             font is never dropped on cold loads/hard reloads (Ctrl+F5). -->
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Regular.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Medium.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-SemiBold.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Bold.otf') }}" crossorigin>
         @yield('vendor_css')
-        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_02" rel="stylesheet" />
+        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_03" rel="stylesheet" />
         <link href="{{ asset('static/budget_app/css/theme-override.css') }}?v=20261120_01" rel="stylesheet" />
         <link href="{{ asset('static/budget_app/css/polish.css') }}?v=20261120_01" rel="stylesheet" />
         @yield('extra_css')

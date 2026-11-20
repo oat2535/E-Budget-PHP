@@ -11,7 +11,7 @@
         <!-- Preload branded font weights used on login page -->
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Regular.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Bold.otf') }}" crossorigin>
-        <link href="{{ asset('static/budget_app/css/styles.css') }}" rel="stylesheet" />
+        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_03" rel="stylesheet" />
         <link rel="icon" type="image/jpeg" href="{{ asset('static/budget_app/assets/img/coins.jpg') }}" />
         <style>
             body {

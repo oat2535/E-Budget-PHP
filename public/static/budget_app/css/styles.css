@@ -14966,139 +14966,136 @@ body {
   overflow-x: hidden;
 }
 
-/* font-display: optional (not swap) on every Metropolis face below — swap
-   guarantees the branded font eventually replaces the fallback even after
-   first paint, which is exactly the visible "font changes, then reverts"
-   flash reported on a hard refresh (Ctrl+F5 bypasses the cached .otf
-   files, so the fallback renders first and Metropolis swaps in once the
-   fresh download finishes; a normal navigation never shows this because
-   the fonts are already cached by then). optional gives the font a brief
-   moment to be ready and commits to whichever one painted first for the
-   rest of that page view — no later swap — while still picking it up
-   from cache on the very next navigation. */
+/* font-display: block on every Metropolis face below:
+   Combined with <link rel="preload" as="font" ...> in <head>, the browser
+   fetches local .otf files immediately at high priority. font-display: block
+   gives a 3s block period and infinite swap period, ensuring the branded
+   font renders directly without falling back to system fonts on a hard reload
+   (Ctrl+F5 / Ctrl+Shift+R) and without visible FOUT (Flash of Unstyled Text)
+   or layout shift. */
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Thin.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 100;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-ThinItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 100;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-ExtraLight.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-ExtraLightItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 200;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Light.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 300;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-LightItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 300;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Regular.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-RegularItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 400;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Medium.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-MediumItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 500;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-SemiBold.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-SemiBoldItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 600;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Bold.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-BoldItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 700;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-ExtraBold.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-ExtraBoldItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 800;
   font-style: italic;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-Black.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Metropolis";
   src: url("../assets/fonts/metropolis/Metropolis-BlackItalic.otf");
-  font-display: optional;
+  font-display: block;
   font-weight: 800;
   font-style: italic;
 }
