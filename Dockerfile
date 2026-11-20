@@ -1,13 +1,12 @@
-FROM dunglas/frankenphp:1-php8.3-alpine
+FROM dunglas/frankenphp:1-php8.3-bookworm
 
 # Environment configuration
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     SERVER_NAME=":8000" \
     PHP_INI_SCAN_DIR=":$PHP_INI_DIR/conf.d"
 
-# Install system dependencies (curl for healthcheck, bash) and required PHP extensions
-RUN apk add --no-cache curl bash \
-    && install-php-extensions \
+# Install required PHP extensions (Debian pre-compiled binaries via install-php-extensions)
+RUN install-php-extensions \
         pdo_pgsql \
         pgsql \
         zip \
