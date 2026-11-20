@@ -18,7 +18,8 @@
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Medium.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-SemiBold.otf') }}" crossorigin>
         <link rel="preload" as="font" type="font/otf" href="{{ asset('static/budget_app/assets/fonts/metropolis/Metropolis-Bold.otf') }}" crossorigin>
-        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_01" rel="stylesheet" />
+        @yield('vendor_css')
+        <link href="{{ asset('static/budget_app/css/styles.css') }}?v=20261120_02" rel="stylesheet" />
         <link href="{{ asset('static/budget_app/css/theme-override.css') }}?v=20261120_01" rel="stylesheet" />
         <link href="{{ asset('static/budget_app/css/polish.css') }}?v=20261120_01" rel="stylesheet" />
         @yield('extra_css')
