@@ -745,7 +745,7 @@ const BudgetApp = (function() {
         
         const container = document.getElementById('tableContainer');
         container.innerHTML = `
-            <table id="datatablesSimple" class="table">
+            <table id="datatablesSimple" class="table table-bordered table-hover">
                 <thead>
                     <tr>
                         <th>Document No</th>
@@ -768,20 +768,20 @@ const BudgetApp = (function() {
             let rowsHtml = '';
             dataArray.forEach(doc => {
                 const catBadge = doc.type === 'VET' ?
-                    '<span class="badge bg-primary">VET</span>' :
-                    doc.type === 'Position Adjustment' ? '<span class="badge bg-info">Position Adjustment</span>' :
-                    doc.type === 'Medical Equipment' ? '<span class="badge bg-success">Medical Equipment</span>' :
-                    doc.type === 'Computer Equipment' ? '<span class="badge bg-warning text-dark">Computer Equipment</span>' :
-                    doc.type === 'Furniture' ? '<span class="badge bg-secondary">Furniture</span>' :
-                    doc.type === 'Tools & Equipment' ? '<span class="badge bg-dark">Tools & Equipment</span>' :
-                    doc.type === 'CAR' ? '<span class="badge" style="background-color: #fd7e14;">CAR</span>' :
-                    doc.type === 'Renovate' ? '<span class="badge" style="background-color: #d63384;">Renovate</span>' :
-                    doc.type === 'Software' ? '<span class="badge" style="background-color: #0ea5e9;">Software</span>' :
-                    doc.type === 'GL Entry' ? '<span class="badge" style="background-color: #0dcaf0;">EXPENSE</span>' :
-                    doc.type === 'Revenue' ? '<span class="badge" style="background-color: #84cc16;">Revenue</span>' :
-                    doc.type === 'Budget Plan' ? '<span class="badge" style="background-color: #20c997;">Budget Plan</span>' :
-                    doc.type === 'GL Actual Template' ? '<span class="badge" style="background-color: #6f42c1;">GL Actual Template</span>' :
-                    '<span class="badge" style="background-color: #6610f2;">NON VET</span>';
+                    '<span class="badge badge-doc-type" style="background-color: #0d6efd;">VET</span>' :
+                    doc.type === 'Position Adjustment' ? '<span class="badge badge-doc-type" style="background-color: #06b6d4;">Position Adjustment</span>' :
+                    doc.type === 'Medical Equipment' ? '<span class="badge badge-doc-type" style="background-color: #198754;">Medical Equipment</span>' :
+                    doc.type === 'Computer Equipment' ? '<span class="badge badge-doc-type" style="background-color: #d97706;">Computer Equipment</span>' :
+                    doc.type === 'Furniture' ? '<span class="badge badge-doc-type" style="background-color: #581c87;">Furniture</span>' :
+                    doc.type === 'Tools & Equipment' ? '<span class="badge badge-doc-type" style="background-color: #1e293b;">Tools & Equipment</span>' :
+                    doc.type === 'CAR' ? '<span class="badge badge-doc-type" style="background-color: #fd7e14;">CAR</span>' :
+                    doc.type === 'Renovate' ? '<span class="badge badge-doc-type" style="background-color: #be185d;">Renovate</span>' :
+                    doc.type === 'Software' ? '<span class="badge badge-doc-type" style="background-color: #0284c7;">Software</span>' :
+                    doc.type === 'GL Entry' ? '<span class="badge badge-doc-type" style="background-color: #0891b2;">EXPENSE</span>' :
+                    doc.type === 'Revenue' ? '<span class="badge badge-doc-type" style="background-color: #65a30d;">Revenue</span>' :
+                    doc.type === 'Budget Plan' ? '<span class="badge badge-doc-type" style="background-color: #0d9488;">Budget Plan</span>' :
+                    doc.type === 'GL Actual Template' ? '<span class="badge badge-doc-type" style="background-color: #7c3aed;">GL Actual Template</span>' :
+                    '<span class="badge badge-doc-type" style="background-color: #6d28d9;">NON VET</span>';
                 const isGeneralLedgerDoc = doc.type === 'GL Entry' || doc.type === 'Revenue' || doc.type === 'Budget Plan';
                 const isGlatDoc = doc.type === 'GL Actual Template';
                 const actionUrl = isGlatDoc ?
@@ -795,11 +795,11 @@ const BudgetApp = (function() {
                 const docNoCell = isCancelled ? `
                     <div class="d-inline-flex align-items-center flex-wrap gap-2">
                         <span class="fw-semibold text-dark">${doc.document_no}</span>
-                        <span class="badge d-inline-flex align-items-center px-2 py-0.5" style="background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.72rem; font-weight: 600; border-radius: 9999px; letter-spacing: 0.2px;" title="รายการนี้ถูกยกเลิกแล้ว">
+                        <span class="badge badge-cancelled" title="รายการนี้ถูกยกเลิกแล้ว">
                             <i data-feather="x-circle" style="width: 11px; height: 11px; stroke-width: 2.5;" class="me-1"></i>ยกเลิก
                         </span>
                     </div>
-                ` : `${doc.document_no}`;
+                ` : `<span class="fw-semibold text-dark">${doc.document_no}</span>`;
 
                 // Per-row stagger delay is handled entirely in CSS via
                 // nth-child (see polish.css) — simple-datatables rebuilds
@@ -856,7 +856,7 @@ const BudgetApp = (function() {
         // Best Practice: Handle the native 'search' and 'input' events for the browser's clear (X) button
         setTimeout(() => {
             const container = document.getElementById('tableContainer');
-            const searchInput = container.querySelector('.dataTable-input');
+            const searchInput = container.querySelector('.datatable-input, .dataTable-input');
             if (searchInput) {
                 const triggerClear = function() {
                     if (searchInput.value === '') {

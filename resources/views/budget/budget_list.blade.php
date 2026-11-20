@@ -2,11 +2,248 @@
 
 
 @section('extra_css')
-<link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="{{ asset('static/budget_app/vendor/jexcel/jexcel.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ asset('static/budget_app/vendor/jsuites/jsuites.css') }}" type="text/css" />
 <link rel="stylesheet" href="{{ asset('static/budget_app/vendor/tom-select/tom-select.bootstrap5.min.css') }}">
 <style>
+    /* ==========================================================================
+       DataTable Visual Consistency & Fixes (Matching Image 2 Reference)
+       ========================================================================== */
+    .datatable-wrapper {
+        width: 100%;
+    }
+    .datatable-top {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0 0 1rem 0 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .datatable-top > .datatable-dropdown {
+        display: flex !important;
+        align-items: center !important;
+        font-size: 0.875rem !important;
+        color: #475569 !important;
+    }
+    .datatable-top > .datatable-dropdown label {
+        display: flex !important;
+        align-items: center !important;
+        margin-bottom: 0 !important;
+        font-size: 0.875rem !important;
+        color: #475569 !important;
+    }
+    /* Fixed selector: plenty of padding, clean chevron, zero text clipping */
+    .datatable-selector {
+        width: auto !important;
+        min-width: 4.25rem !important;
+        display: inline-block !important;
+        padding: 0.375rem 2rem 0.375rem 0.75rem !important;
+        margin-right: 0.5rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        line-height: 1.5 !important;
+        color: #334155 !important;
+        background-color: #ffffff !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.65rem center !important;
+        background-size: 14px 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.375rem !important;
+        cursor: pointer !important;
+    }
+    .datatable-selector:focus {
+        border-color: #0061f2 !important;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.2) !important;
+    }
+
+    /* Search input */
+    .datatable-search {
+        display: flex !important;
+        align-items: center !important;
+    }
+    .datatable-input {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.875rem !important;
+        color: #334155 !important;
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.375rem !important;
+        outline: none !important;
+        width: 13rem !important;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+    }
+    .datatable-input:focus {
+        border-color: #0061f2 !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.2) !important;
+    }
+
+    /* Table Grid: Full table-bordered matching Image 2 */
+    .datatable-container {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.375rem !important;
+        overflow-x: auto !important;
+    }
+    .datatable-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-bottom: 0 !important;
+    }
+    .datatable-table > thead > tr > th {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        font-weight: 700 !important;
+        font-size: 0.875rem !important;
+        padding: 0.85rem 1rem !important;
+        border: 1px solid #e2e8f0 !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+    }
+    .datatable-table > tbody > tr > td {
+        padding: 0.85rem 1rem !important;
+        border: 1px solid #e2e8f0 !important;
+        vertical-align: middle !important;
+        font-size: 0.875rem !important;
+        color: #334155 !important;
+    }
+    .datatable-table > tbody > tr:hover {
+        background-color: #f8fafc !important;
+    }
+
+    /* Sorter icons */
+    .datatable-sorter {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        padding-right: 0 !important;
+    }
+    .datatable-sorter::before,
+    .datatable-sorter::after {
+        opacity: 0.3 !important;
+    }
+    .datatable-ascending .datatable-sorter::after,
+    .asc .datatable-sorter::after {
+        opacity: 0.8 !important;
+    }
+    .datatable-descending .datatable-sorter::before,
+    .desc .datatable-sorter::before {
+        opacity: 0.8 !important;
+    }
+
+    /* Bottom footer: Info & Pagination */
+    .datatable-bottom {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem 0 0 0 !important;
+        margin-top: 0.5rem !important;
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
+    }
+    .datatable-info {
+        font-size: 0.875rem !important;
+        color: #475569 !important;
+        margin: 0 !important;
+    }
+    .datatable-pagination ul {
+        margin: 0 !important;
+        padding-left: 0 !important;
+        display: flex !important;
+        list-style: none !important;
+        gap: 3px !important;
+    }
+    .datatable-pagination li {
+        list-style: none !important;
+    }
+    .datatable-pagination a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 2.25rem !important;
+        height: 2.25rem !important;
+        padding: 0 0.6rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        color: #0061f2 !important;
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.375rem !important;
+        text-decoration: none !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    .datatable-pagination a:hover {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #004ecc !important;
+    }
+    .datatable-pagination .datatable-active a,
+    .datatable-pagination .active a {
+        background-color: #0061f2 !important;
+        border-color: #0061f2 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        cursor: default !important;
+    }
+    .datatable-pagination .datatable-disabled a,
+    .datatable-pagination .disabled a {
+        color: #94a3b8 !important;
+        background-color: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        cursor: not-allowed !important;
+        opacity: 0.7 !important;
+    }
+
+    /* Type Badge Styling matching Image 2 */
+    .badge-doc-type {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        border-radius: 6px !important;
+        white-space: nowrap !important;
+        color: #ffffff !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    /* Cancelled Badge */
+    .badge-cancelled {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 0.2rem 0.55rem !important;
+        background-color: #fee2e2 !important;
+        color: #dc2626 !important;
+        border: 1px solid #fecaca !important;
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        border-radius: 9999px !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    /* Action eye button */
+    .btn-datatable.btn-transparent-dark {
+        color: #64748b !important;
+        background-color: transparent !important;
+        border: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 2rem !important;
+        height: 2rem !important;
+        border-radius: 0.35rem !important;
+    }
+    .btn-datatable.btn-transparent-dark:hover {
+        color: #0061f2 !important;
+        background-color: #eff6ff !important;
+    }
+    .btn-datatable.btn-transparent-dark svg {
+        width: 1.15rem !important;
+        height: 1.15rem !important;
+    }
     .jexcel_container {
         width: 100%;
         max-width: 100%;
@@ -353,8 +590,8 @@
     <!-- Table placeholder for selected category -->
     <div class="card mb-4 card-soft">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span id="tableTitle" class="fw-bold">Budget Entries</span>
-            <div class="d-flex flex-wrap">
+            <span id="tableTitle" class="fw-bold text-primary">Budget Entries</span>
+            <div class="d-flex flex-wrap gap-2">
             <select id="docTypeFilter" class="form-select form-select-sm w-auto" style="display: none; cursor: pointer;" onchange="applyFilters()">
                 <option value="ALL">ทั้งหมด (All Types)</option>
                 <option value="VET">VET Manpower</option>
@@ -372,13 +609,13 @@
                 <option value="GL Actual Template">GL Actual Template</option>
             </select>
             @if($is_privileged_user || $is_view_only)
-            <select id="filterCreateName" class="form-select form-select-sm w-auto ms-2" style="display: none; cursor: pointer;" onchange="applyFilters()">
+            <select id="filterCreateName" class="form-select form-select-sm w-auto" style="display: none; cursor: pointer;" onchange="applyFilters()">
                 <option value="ALL">ผู้สร้างทั้งหมด</option>
             </select>
-            <select id="filterBranch" class="form-select form-select-sm w-auto ms-2" style="display: none; cursor: pointer;" onchange="applyFilters()">
+            <select id="filterBranch" class="form-select form-select-sm w-auto" style="display: none; cursor: pointer;" onchange="applyFilters()">
                 <option value="ALL">ทุกสาขา</option>
             </select>
-            <select id="filterCostCenter" class="form-select form-select-sm w-auto ms-2" style="display: none; cursor: pointer;" onchange="applyFilters()">
+            <select id="filterCostCenter" class="form-select form-select-sm w-auto" style="display: none; cursor: pointer;" onchange="applyFilters()">
                 <option value="ALL">ทุก Cost Center</option>
             </select>
             @endif
@@ -395,7 +632,7 @@
             </div>
 
             <div id="tableContainer" style="display: none;">
-                <table id="datatablesSimple">
+                <table id="datatablesSimple" class="table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>Document No</th>
@@ -822,5 +1059,5 @@
         needsBranchSelection: {{ ($needs_branch_selection ?? false) ? 'true' : 'false' }}
     };
 </script>
-<script src="{{ asset('static/budget_app/js/budget_list.js') }}?v=20261119_02"></script>
+<script src="{{ asset('static/budget_app/js/budget_list.js') }}?v=20261120_03"></script>
 @endsection
