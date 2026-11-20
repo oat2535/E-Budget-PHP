@@ -16,8 +16,8 @@
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        padding: 0 0 1rem 0 !important;
-        margin-bottom: 0.5rem !important;
+        padding: 0 0 0.75rem 0 !important;
+        margin-bottom: 0.25rem !important;
     }
     .datatable-top > .datatable-dropdown {
         display: flex !important;
@@ -48,35 +48,51 @@
         background-repeat: no-repeat !important;
         background-position: right 0.65rem center !important;
         background-size: 14px 10px !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 0.375rem !important;
+        border: 1px solid #c5ccd6 !important;
+        border-radius: 0.35rem !important;
         cursor: pointer !important;
     }
     .datatable-selector:focus {
         border-color: #0061f2 !important;
         outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.2) !important;
+        box-shadow: 0 0 0 0.25rem rgba(0, 97, 242, 0.25) !important;
     }
 
-    /* Search input */
+    /* Search input - Original compact format matching reference image */
     .datatable-search {
         display: flex !important;
         align-items: center !important;
+        margin-bottom: 0 !important;
     }
     .datatable-input {
-        padding: 0.375rem 0.75rem !important;
+        display: inline-block !important;
+        width: auto !important;
+        min-width: 9.25rem !important;
+        max-width: 10rem !important;
+        height: 2rem !important;
+        padding: 6px 12px !important;
         font-size: 0.875rem !important;
-        color: #334155 !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        color: #69707a !important;
         background-color: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 0.375rem !important;
-        outline: none !important;
-        width: 13rem !important;
+        border: 1px solid #c5ccd6 !important;
+        border-radius: 0.35rem !important;
+        box-shadow: none !important;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
     }
+    .datatable-input::-webkit-input-placeholder,
+    .datatable-input::-moz-placeholder,
+    .datatable-input::placeholder {
+        color: #a7aeb8 !important;
+        opacity: 1 !important;
+    }
     .datatable-input:focus {
+        color: #69707a !important;
+        background-color: #ffffff !important;
         border-color: #0061f2 !important;
-        box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.2) !important;
+        outline: 0 !important;
+        box-shadow: 0 0 0 0.25rem rgba(0, 97, 242, 0.25) !important;
     }
 
     /* Table Grid: Full table-bordered matching Image 2 */
@@ -1059,5 +1075,5 @@
         needsBranchSelection: {{ ($needs_branch_selection ?? false) ? 'true' : 'false' }}
     };
 </script>
-<script src="{{ asset('static/budget_app/js/budget_list.js') }}?v=20261120_03"></script>
+<script src="{{ asset('static/budget_app/js/budget_list.js') }}?v=20261120_04"></script>
 @endsection
