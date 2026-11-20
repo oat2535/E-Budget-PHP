@@ -1,24 +1,28 @@
 services:
   web:
-    container_name: e-budget-web-uat
-    build: .
+    container_name: e-budget-web-laravel
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "5890:8000"
     environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DEBUG: ${DEBUG:-False}
-      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
-      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
-      ENABLE_SECURE_SSL: ${ENABLE_SECURE_SSL:-False}
-      DB_DEFAULT_NAME: ${DB_DEFAULT_NAME}
-      DB_DEFAULT_USER: ${DB_DEFAULT_USER}
-      DB_DEFAULT_PASSWORD: ${DB_DEFAULT_PASSWORD}
-      DB_DEFAULT_HOST: ${DB_DEFAULT_HOST}
-      DB_DEFAULT_PORT: ${DB_DEFAULT_PORT:-5434}
-      DB_IMEDX_NAME: ${DB_IMEDX_NAME}
-      DB_IMEDX_USER: ${DB_IMEDX_USER}
-      DB_IMEDX_PASSWORD: ${DB_IMEDX_PASSWORD}
-      DB_IMEDX_HOST: ${DB_IMEDX_HOST}
-      DB_IMEDX_PORT: ${DB_IMEDX_PORT:-5434}
-      DB_CONN_MAX_AGE: ${DB_CONN_MAX_AGE:-600}
+      APP_NAME: "${APP_NAME:-E-Budget}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_URL:-http://localhost:5890}"
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "${DB_DEFAULT_HOST:-host.docker.internal}"
+      DB_PORT: "${DB_DEFAULT_PORT:-5434}"
+      DB_DATABASE: "${DB_DEFAULT_NAME:-imedx_tlp_for_it}"
+      DB_USERNAME: "${DB_DEFAULT_USER:-postgres}"
+      DB_PASSWORD: "${DB_DEFAULT_PASSWORD}"
+      DB_IMEDX_HOST: "${DB_IMEDX_HOST:-host.docker.internal}"
+      DB_IMEDX_PORT: "${DB_IMEDX_PORT:-5434}"
+      DB_IMEDX_DATABASE: "${DB_IMEDX_NAME:-imedx_uat}"
+      DB_IMEDX_USERNAME: "${DB_IMEDX_USER:-postgres}"
+      DB_IMEDX_PASSWORD: "${DB_IMEDX_PASSWORD}"
+      SESSION_DRIVER: "file"
+      CACHE_STORE: "file"
