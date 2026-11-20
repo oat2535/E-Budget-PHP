@@ -121,6 +121,7 @@ class BudgetCreateController extends Controller
                             'item_master_id' => $masterObj ? $masterObj->id : null,
                             'general_ledger_code' => $glCode ?: BudgetService::VET_CUSTOM_POSITION_GL_CODE,
                             'budget_year' => $budgetYear,
+                            'status' => VetManpower::STATUS_PENDING,
                         ]);
                         BudgetService::saveMonthlyData($obj, 'VET', $item['monthly_data'] ?? []);
                     }
@@ -231,6 +232,7 @@ class BudgetCreateController extends Controller
                             'salary_general_ledger_code' => BudgetService::NON_VET_SALARY_GL_CODE,
                             'position_allowance_general_ledger_code' => BudgetService::NON_VET_ALLOWANCE_GL_CODE,
                             'budget_year' => $budgetYear,
+                            'status' => NonVetManpower::STATUS_PENDING,
                         ]);
                         BudgetService::saveMonthlyData($obj, 'NON VET', $item['monthly_data'] ?? []);
                     }
@@ -368,6 +370,7 @@ class BudgetCreateController extends Controller
                             'salary_general_ledger_code' => $salaryGl,
                             'allowance_general_ledger_code' => $allowanceGl,
                             'budget_year' => $budgetYear,
+                            'status' => PositionAdjustment::STATUS_PENDING,
                         ]);
                         BudgetService::saveMonthlyData($obj, 'Position Adjustment', $item['monthly_data'] ?? []);
                     }
@@ -507,6 +510,7 @@ class BudgetCreateController extends Controller
                             'item_master_id' => $masterObj ? $masterObj->id : null,
                             'general_ledger_code' => $glCode,
                             'budget_year' => $budgetYear,
+                            'status' => $modelClass::STATUS_PENDING,
                         ]);
                         BudgetService::saveMonthlyData($obj, $docType, $item['monthly_data'] ?? []);
                     }
@@ -634,6 +638,7 @@ class BudgetCreateController extends Controller
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'document_no' => $docNo,
                             'budget_year' => $budgetYear,
+                            'status' => GlEntry::STATUS_PENDING,
                         ]);
                         BudgetService::saveGlEntryMonthlyData($obj, $item['monthly_data'] ?? []);
                     }
@@ -707,6 +712,7 @@ class BudgetCreateController extends Controller
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'document_no' => $docNo,
                             'budget_year' => $budgetYear,
+                            'status' => Revenue::STATUS_PENDING,
                         ]);
                         BudgetService::saveRevenueMonthlyData($obj, $item['monthly_data'] ?? []);
                     }
@@ -777,6 +783,7 @@ class BudgetCreateController extends Controller
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'document_no' => $docNo,
                             'budget_year' => $budgetYear,
+                            'status' => BudgetPlanItem::STATUS_PENDING,
                         ]);
                         BudgetService::saveBudgetPlanMonthlyData($obj, $item['monthly_data'] ?? []);
                     }
@@ -854,6 +861,7 @@ class BudgetCreateController extends Controller
                             'growth_pct_2' => $item['growth_pct_2'] ?? 0,
                             'growth_pct_3' => $item['growth_pct_3'] ?? 0,
                             'document_no' => $docNo,
+                            'status' => GlActualTemplate::STATUS_PENDING,
                         ]);
                     }
                 });

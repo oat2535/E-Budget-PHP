@@ -84,4 +84,33 @@ class BudgetDocumentApiTest extends TestCase
             'message' => 'กรุณาระบุเหตุผลการยกเลิก',
         ]);
     }
+
+    public function test_get_document_detail_nonexistent_returns_error(): void
+    {
+        $user = new User(['username' => 'test_officer']);
+        $response = $this->actingAs($user)->getJson('/api/document/VET/NON_EXISTENT_DOC_NO');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'ไม่พบเอกสารนี้',
+        ]);
+    }
+
+    public function test_update_document_nonexistent_returns_error(): void
+    {
+        $user = new User(['username' => 'test_officer']);
+        $payload = [
+            [
+                'cost_center_name' => 'CC1',
+                'position_name' => 'Veterinarian',
+                'salary' => 30000,
+            ],
+        ];
+        $response = $this->actingAs($user)->postJson('/api/document/update/VET/NON_EXISTENT_DOC_NO', $payload);
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'ไม่พบเอกสาร',
+        ]);
+    }
 }

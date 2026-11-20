@@ -18,6 +18,14 @@ class MedicalEquipment extends Model
     public const UPDATED_AT = 'modify_date';
     protected $dateFormat = 'Y-m-d H:i:s';
 
+    public const STATUS_PENDING = 'PENDING';
+    public const STATUS_APPROVED = 'APPROVED';
+    public const STATUS_CANCELLED = 'CANCELLED';
+
+    protected $attributes = [
+        'status' => self::STATUS_PENDING,
+    ];
+
     protected $fillable = [
         'item_name',
         'description',

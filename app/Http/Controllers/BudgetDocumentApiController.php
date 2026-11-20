@@ -507,6 +507,9 @@ class BudgetDocumentApiController extends Controller
             $glMasterFields = BudgetService::getGlMasterFieldsBulk($glCodes);
         }
 
+        $vetFks = [];
+        $nonVetFks = [];
+
         // Validate Dropdown items exist in master data
         if ($docType === 'VET' || $docType === 'NON VET') {
             foreach ($data as $item) {
@@ -600,9 +603,10 @@ class BudgetDocumentApiController extends Controller
             DB::connection('pgsql')->transaction(function () use (
                 $docType, $docNo, $data, $modelClass, $existingItems, $baseBranchId,
                 $deptId, $budgetYear, $createDate, $createEid, $user, $masterFks,
-                $glMasterFields, $equipmentSubcatMap
+                $glMasterFields, $equipmentSubcatMap, $vetFks, $nonVetFks
             ) {
                 $existingMap = $existingItems->keyBy('id');
+                $docStatus = $existingItems->first()->status ?? self::STATUS_PENDING;
                 $submittedIds = [];
                 foreach ($data as $item) {
                     $itemId = $item['id'] ?? null;
@@ -612,9 +616,15 @@ class BudgetDocumentApiController extends Controller
                 }
 
                 // Delete rows removed by user
-                $modelClass::where('document_no', $docNo)
+                $toDelete = $modelClass::where('document_no', $docNo)
                     ->whereNotIn('id', $submittedIds)
-                    ->delete();
+                    ->get();
+                foreach ($toDelete as $delObj) {
+                    if (method_exists($delObj, 'monthlyDetails')) {
+                        $delObj->monthlyDetails()->delete();
+                    }
+                    $delObj->delete();
+                }
 
                 // Upsert rows
                 foreach ($data as $item) {
@@ -623,6 +633,8 @@ class BudgetDocumentApiController extends Controller
 
                     if ($docType === 'Position Adjustment') {
                         $adjType = $item['adjustment_type'] ?? '';
+                        $allowedFks = ($adjType === 'VET') ? $vetFks : $nonVetFks;
+                        [$masterObj, $_] = $allowedFks[$item['new_position_name']] ?? [null, null];
                         [$salaryGl, $allowanceGl] = BudgetService::resolveAdjustmentGlCodes($adjType);
                         $fields = [
                             'adjustment_type' => $adjType ?: null,
@@ -638,6 +650,7 @@ class BudgetDocumentApiController extends Controller
                             'department_id' => $deptId,
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'modify_eid' => $user->username,
+                            'item_master_id' => $masterObj ? $masterObj->id : null,
                             'salary_general_ledger_code' => $salaryGl,
                             'allowance_general_ledger_code' => $allowanceGl,
                             'budget_year' => $budgetYear,
@@ -651,6 +664,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
@@ -665,6 +679,7 @@ class BudgetDocumentApiController extends Controller
                             'department_id' => $deptId,
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'modify_eid' => $user->username,
+                            'item_master_id' => $masterObj ? $masterObj->id : null,
                             'general_ledger_code' => $glCode ?: BudgetService::VET_CUSTOM_POSITION_GL_CODE,
                             'budget_year' => $budgetYear,
                         ];
@@ -677,6 +692,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
@@ -692,6 +708,7 @@ class BudgetDocumentApiController extends Controller
                             'department_id' => $deptId,
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'modify_eid' => $user->username,
+                            'item_master_id' => $masterObj ? $masterObj->id : null,
                             'general_ledger_code' => $glCode,
                             'budget_year' => $budgetYear,
                         ];
@@ -704,6 +721,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
@@ -730,6 +748,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
@@ -760,6 +779,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
@@ -794,11 +814,13 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $modelClass::create($fields);
                         }
                     } else {
                         // NON VET
+                        [$masterObj, $_] = $masterFks[$item['position_name']] ?? [null, null];
                         $fields = [
                             'position_name' => $item['position_name'],
                             'description' => $item['description'] ?? null,
@@ -808,6 +830,7 @@ class BudgetDocumentApiController extends Controller
                             'department_id' => $deptId,
                             'cost_center_name' => $item['cost_center_name'] ?? null,
                             'modify_eid' => $user->username,
+                            'item_master_id' => $masterObj ? $masterObj->id : null,
                             'salary_general_ledger_code' => BudgetService::NON_VET_SALARY_GL_CODE,
                             'position_allowance_general_ledger_code' => BudgetService::NON_VET_ALLOWANCE_GL_CODE,
                             'budget_year' => $budgetYear,
@@ -821,6 +844,7 @@ class BudgetDocumentApiController extends Controller
                                 'document_no' => $docNo,
                                 'create_date' => $createDate,
                                 'create_eid' => $createEid,
+                                'status' => $docStatus,
                             ]);
                             $obj = $modelClass::create($fields);
                         }
