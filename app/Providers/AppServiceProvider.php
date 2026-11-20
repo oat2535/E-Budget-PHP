@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (str_starts_with(config('app.url'), 'https://') || app()->environment('production', 'uat')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Auth::provider('imedx', function ($app, array $config) {
             return new ImedxUserProvider();
         });

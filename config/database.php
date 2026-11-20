@@ -103,14 +103,14 @@ return [
             'driver' => 'pgsql',
             'host' => env('DB_IMEDX_HOST', '192.168.98.254'),
             'port' => env('DB_IMEDX_PORT', '5434'),
-            'database' => env('DB_IMEDX_NAME', 'imedx_uat'),
-            'username' => env('DB_IMEDX_USER', 'eservices'),
+            'database' => env('DB_IMEDX_NAME', env('DB_IMEDX_DATABASE', 'imedx_uat')),
+            'username' => env('DB_IMEDX_USER', env('DB_IMEDX_USERNAME', 'eservices')),
             'password' => env('DB_IMEDX_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'search_path' => env('DB_IMEDX_SCHEMA', 'public'),
+            'sslmode' => env('DB_IMEDX_SSLMODE', 'prefer'),
         ],
 
         'sqlsrv' => [
