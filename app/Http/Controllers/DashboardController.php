@@ -38,6 +38,16 @@ class DashboardController extends Controller
         $requestedBranch = strtoupper(trim((string) $request->query('branch', '')));
         $selectedBranch = ($requestedBranch && in_array($requestedBranch, $allowedCodes, true)) ? $requestedBranch : '';
 
+        $allowedCostCenters = BudgetRoleService::getAllowedCostCentersForDashboard($request);
+        $selectedCostCenter = (string) $request->query('cost_center', '');
+        $costCenterNames = array_column($allowedCostCenters, 'name');
+        if ($selectedCostCenter !== '' && ! in_array($selectedCostCenter, $costCenterNames, true) && strtoupper($selectedCostCenter) !== 'ALL') {
+            $selectedCostCenter = '';
+        }
+        if ($selectedCostCenter === '' && count($allowedCostCenters) === 1) {
+            $selectedCostCenter = $allowedCostCenters[0]['name'];
+        }
+
         return view('budget.dashboard', [
             'allowed_branches' => $allowedBranches,
             'selected_branch' => $selectedBranch,
@@ -45,6 +55,8 @@ class DashboardController extends Controller
             'can_view_all_branches' => $canViewAll,
             'budget_years' => $budgetYears,
             'selected_year' => $selectedYear,
+            'allowed_cost_centers' => $allowedCostCenters,
+            'selected_cost_center' => $selectedCostCenter,
         ]);
     }
 
@@ -69,7 +81,24 @@ class DashboardController extends Controller
             $budgetYear = (int) $rawYear;
         }
 
-        $payload = DashboardService::buildDashboardData($branchDict, $budgetYear);
+        $allowedCostCenters = BudgetRoleService::getAllowedCostCentersForDashboard($request);
+        $rawCostCenter = trim((string) $request->query('cost_center', ''));
+        $costCenter = null;
+        if ($rawCostCenter !== '' && strtoupper($rawCostCenter) !== 'ALL') {
+            $found = false;
+            foreach ($allowedCostCenters as $cc) {
+                if (strcasecmp($cc['name'], $rawCostCenter) === 0 || strcasecmp($cc['code'], $rawCostCenter) === 0) {
+                    $found = true;
+                    $costCenter = $cc['name'];
+                    break;
+                }
+            }
+            if (! $found) {
+                return [null, null, response()->json(['status' => 'error', 'message' => 'ท่านไม่มีสิทธิ์เข้าดูข้อมูล Cost Center นี้'], 403)];
+            }
+        }
+
+        $payload = DashboardService::buildDashboardData($branchDict, $budgetYear, $costCenter);
         return [$branchDict, $budgetYear, $payload];
     }
 
@@ -93,7 +122,8 @@ class DashboardController extends Controller
         $xlsxBytes = XlsxExportService::buildDashboardXlsx($result);
 
         $safeBranch = preg_replace('/[^A-Za-z0-9_-]/', '', $branchDict['code']) ?: 'branch';
-        $filename = "Dashboard_{$safeBranch}_{$budgetYear}.xlsx";
+        $safeCostCenter = ! empty($result['cost_center']) ? '_' . preg_replace('/[^A-Za-z0-9_-]/', '', $result['cost_center']) : '';
+        $filename = "Dashboard_{$safeBranch}{$safeCostCenter}_{$budgetYear}.xlsx";
 
         return response($xlsxBytes, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

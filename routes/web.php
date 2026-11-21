@@ -44,7 +44,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/api/document/cancel/{doc_type}/{doc_no}', [BudgetDocumentApiController::class, 'cancelDocument'])->name('api_document_cancel');
     });
 
-    // Dashboard
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard Routes
+    |--------------------------------------------------------------------------
+    */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('budget_dashboard');
     Route::get('/api/dashboard/data', [DashboardController::class, 'data'])->name('api_dashboard_data');
     Route::get('/api/dashboard/export', [DashboardController::class, 'export'])->name('api_dashboard_export');

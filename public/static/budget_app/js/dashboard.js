@@ -30,6 +30,7 @@
         el.configEl = document.getElementById('dashboard-config');
         el.branchSelect = document.getElementById('dashboard-branch-select');
         el.branchLockedInput = document.getElementById('dashboard-branch-locked');
+        el.costCenterSelect = document.getElementById('dashboard-cost-center-select');
         el.yearSelect = document.getElementById('dashboard-year-select');
         el.btnRefresh = document.getElementById('btn-dashboard-refresh');
         el.btnExport = document.getElementById('btn-dashboard-export');
@@ -94,6 +95,10 @@
 
     function getSelectedYear() {
         return el.yearSelect ? (el.yearSelect.value || '').trim() : '';
+    }
+
+    function getSelectedCostCenter() {
+        return el.costCenterSelect ? (el.costCenterSelect.value || '').trim() : '';
     }
 
     function setLoading(isLoading) {
@@ -342,17 +347,22 @@
         }
 
         if (!el.metaStrip) return;
+        const cc = (payload && payload.cost_center) || getSelectedCostCenter();
+        const ccText = (cc && cc !== 'ALL')
+            ? '<span class="badge bg-success me-2">Cost Center: ' + escapeHtml(cc) + '</span>'
+            : '';
+
         const branchText = '<span class="badge bg-primary me-2">สาขา: ' +
             escapeHtml(branchLabel) + '</span>' +
             '<span class="badge bg-secondary me-2">ปีงบประมาณ: ' + escapeHtml(year) + '</span>';
 
         if (!doc) {
-            el.metaStrip.innerHTML = branchText +
+            el.metaStrip.innerHTML = branchText + ccText +
                 '<span class="badge bg-warning text-dark">GL Actual Template: ยังไม่พบข้อมูลปี ' + escapeHtml(year) + '</span>';
             return;
         }
 
-        el.metaStrip.innerHTML = branchText +
+        el.metaStrip.innerHTML = branchText + ccText +
             '<span class="badge bg-info text-dark me-2">GL Actual: ' + escapeHtml(doc.document_no) + '</span>' +
             '<span class="badge bg-light text-dark border me-2">Actual: ' + escapeHtml(doc.actual_month_count) + ' เดือน</span>' +
             '<span class="badge bg-light text-dark border">%โต 1/2/3: ' +
@@ -375,6 +385,8 @@
             const url = new URL(config.data_api_url, window.location.origin);
             url.searchParams.set('branch', branch);
             if (year) url.searchParams.set('year', year);
+            const costCenter = getSelectedCostCenter();
+            if (costCenter && costCenter !== 'ALL') url.searchParams.set('cost_center', costCenter);
 
             const resp = await fetch(url.toString(), {
                 method: 'GET',
@@ -418,6 +430,8 @@
             const url = new URL(config.export_api_url, window.location.origin);
             url.searchParams.set('branch', branch);
             if (year) url.searchParams.set('year', year);
+            const costCenter = getSelectedCostCenter();
+            if (costCenter && costCenter !== 'ALL') url.searchParams.set('cost_center', costCenter);
 
             const resp = await fetch(url.toString(), {
                 method: 'GET',
@@ -558,6 +572,14 @@
         bindHorizontalScrollSync();
         if (el.yearSelect) {
             el.yearSelect.addEventListener('change', function () {
+                const branch = getSelectedBranch();
+                if (!branch) return;
+                if (!state.hasLoaded && el.branchLockedInput) return;
+                loadDashboardData();
+            });
+        }
+        if (el.costCenterSelect) {
+            el.costCenterSelect.addEventListener('change', function () {
                 const branch = getSelectedBranch();
                 if (!branch) return;
                 if (!state.hasLoaded && el.branchLockedInput) return;
