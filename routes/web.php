@@ -9,11 +9,8 @@ use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
 
 // Guest / Authentication routes
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-});
-
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Authenticated Budget routes

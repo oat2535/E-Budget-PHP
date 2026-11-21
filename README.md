@@ -207,6 +207,7 @@ flowchart TD
 - **Reverse Proxy SSL Trust:** คอนฟิก `TRUSTED_PROXIES="*"` รองรับการรับ Header `X-Forwarded-Proto: https` จาก Reverse Proxy ป้องกันปัญหา Mixed Content และ Cookie Leakage
 - **SQL Injection & XSS Prevention:** ใช้ Eloquent ORM และ Parameterized Query ทั้งหมด พร้อม Blade CSRF Protection (`@csrf`, `X-CSRF-TOKEN`)
 - **Audit Logging:** บันทึกผู้สร้างเอกสาร (`create_eid`) และผู้แก้ไขล่าสุด (`modify_eid`) ในทุก Transaction
+- **Inactivity Timeout & Auto-Logout:** เซสชัน 1 ชั่วโมง พร้อมระบบแจ้งเตือน SweetAlert ล่วงหน้า 2 นาที (นาทีที่ 58) และ Auto-Logout อัตโนมัติเมื่อครบ 60 นาที หรือเมื่อเปิดจอทิ้งไว้นานกว่า 1 ชั่วโมง โดยนำทางไปยังหน้า Login พร้อมแสดงหน้าต่างแจ้งเตือนเซสชันหมดอายุทันที ป้องกันข้อมูลค้างเติ่ง รองรับการทดสอบด่วนด้วย `?test_idle=10` หรือ `window.__testIdlePopup()` ในเบราว์เซอร์
 
 ---
 

@@ -134,3 +134,8 @@ flowchart TD
    - กำหนด `@font-face` ด้วย `font-display: block` ควบคู่กับ `<link rel="preload">` ช่วยป้องกันอาการฟอนต์หลุดบนการ Hard Reload (`Ctrl + F5`) และตัดปัญหา FOUT (Flash of Unstyled Text) ได้อย่างสมบูรณ์
 3. **Automated Testing Coverage:**
    - ชุดทดสอบอัตโนมัติครบถ้วนทั้ง Unit Tests และ Feature Integration Tests (ตรวจสอบการสร้างเอกสาร, การบันทึกลง Database, API Contracts, และ Authentication)
+4. **Session Security & Inactivity Auto-Logout:**
+   - เซสชันมีอายุการใช้งาน 1 ชั่วโมง (60 นาที) ตามมาตรฐานความปลอดภัย
+   - ระบบตรวจจับความเคลื่อนไหว (User Activity Detection) กรองการสั่นของเซนเซอร์เมาส์ (Mouse Micro-Jitter Filter >= 10px) และรองรับการซิงค์ข้ามแท็บผ่าน `localStorage`
+   - แจ้งเตือนล่วงหน้า 2 นาที (ที่นาทีที่ 58) ด้วยหน้าต่างนับถอยหลัง SweetAlert เพื่อให้ผู้ใช้งานกด "อยู่ในระบบต่อ" ได้ทันท่วงที
+   - หากไม่มีการทำรายการจนครบ 1 ชั่วโมง หรือกรณีล็อกหน้าจอ/หลับไป ระบบจะทำ Auto-Logout ไปยังหน้า Login พร้อมแสดงหน้าต่าง SweetAlert แจ้งสาเหตุการออกจากระบบอย่างชัดเจน และรองรับการทดสอบทันใจด้วยพารามิเตอร์ `?test_idle=10` หรือฟังก์ชัน `window.__testIdlePopup()` ใน Console
