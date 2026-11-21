@@ -102,7 +102,7 @@
                     </select>
                 </div>
 
-                <div class="col-6 col-md-2 col-lg-2">
+                <div class="col-12 col-md-4 col-lg-3">
                     <label for="dashboard-year-select" class="form-label fw-semibold small mb-1">ปีงบประมาณ</label>
                     <select id="dashboard-year-select" class="form-select">
                         @foreach($budget_years as $yr)
@@ -111,7 +111,7 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-3">
                     <div id="dashboard-meta-strip" class="d-flex flex-wrap align-items-center gap-1 justify-content-lg-end"></div>
                 </div>
             </div>
@@ -192,5 +192,5 @@
 
 @section('extra_js')
 <script src="{{ asset('static/budget_app/vendor/tom-select/tom-select.complete.min.js') }}"></script>
-<script src="{{ asset('static/budget_app/js/dashboard.js') }}?v=20261121_01"></script>
+<script src="{{ asset('static/budget_app/js/dashboard.js') }}?v=20261121_02"></script>
 @endsection
