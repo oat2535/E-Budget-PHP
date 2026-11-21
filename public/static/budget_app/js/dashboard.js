@@ -22,6 +22,8 @@
         rowFilter: 'all',
         searchTerm: '',
         branchSelectInstance: null,
+        costCenterSelectInstance: null,
+        yearSelectInstance: null,
     };
 
     const el = {};
@@ -94,10 +96,16 @@
     }
 
     function getSelectedYear() {
+        if (state.yearSelectInstance) {
+            return (state.yearSelectInstance.getValue() || '').trim();
+        }
         return el.yearSelect ? (el.yearSelect.value || '').trim() : '';
     }
 
     function getSelectedCostCenter() {
+        if (state.costCenterSelectInstance) {
+            return (state.costCenterSelectInstance.getValue() || '').trim();
+        }
         return el.costCenterSelect ? (el.costCenterSelect.value || '').trim() : '';
     }
 
@@ -148,6 +156,58 @@
             },
         });
         state.branchSelectInstance._lastValidBranch = previousVal;
+    }
+
+    function initCostCenterDropdown(config) {
+        if (!el.costCenterSelect) return;
+        if (typeof window.TomSelect === 'undefined') {
+            el.costCenterSelect.addEventListener('change', function () {
+                const branch = getSelectedBranch();
+                if (!branch) return;
+                if (!state.hasLoaded && el.branchLockedInput) return;
+                loadDashboardData();
+            });
+            return;
+        }
+        state.costCenterSelectInstance = new window.TomSelect(el.costCenterSelect, {
+            allowEmptyOption: false,
+            create: false,
+            maxItems: 1,
+            sortField: [{ field: '$score' }, { field: '$order' }],
+            placeholder: '-- ทั้งหมดตามสิทธิ์ --',
+            onChange: function (value) {
+                const branch = getSelectedBranch();
+                if (!branch) return;
+                if (!state.hasLoaded && el.branchLockedInput) return;
+                loadDashboardData();
+            },
+        });
+    }
+
+    function initYearDropdown(config) {
+        if (!el.yearSelect) return;
+        if (typeof window.TomSelect === 'undefined') {
+            el.yearSelect.addEventListener('change', function () {
+                const branch = getSelectedBranch();
+                if (!branch) return;
+                if (!state.hasLoaded && el.branchLockedInput) return;
+                loadDashboardData();
+            });
+            return;
+        }
+        state.yearSelectInstance = new window.TomSelect(el.yearSelect, {
+            allowEmptyOption: false,
+            create: false,
+            maxItems: 1,
+            controlInput: null,
+            sortField: [{ field: '$score' }, { field: '$order' }],
+            onChange: function (value) {
+                const branch = getSelectedBranch();
+                if (!branch) return;
+                if (!state.hasLoaded && el.branchLockedInput) return;
+                loadDashboardData();
+            },
+        });
     }
 
     function renderTableHeader() {
@@ -637,6 +697,8 @@
         cacheElements();
         const config = readConfig();
         initBranchDropdown(config);
+        initCostCenterDropdown(config);
+        initYearDropdown(config);
         renderTableHeader();
         setColumnPreset('full');
         bindEvents();

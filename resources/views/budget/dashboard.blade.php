@@ -192,5 +192,5 @@
 
 @section('extra_js')
 <script src="{{ asset('static/budget_app/vendor/tom-select/tom-select.complete.min.js') }}"></script>
-<script src="{{ asset('static/budget_app/js/dashboard.js') }}?v=20261121_02"></script>
+<script src="{{ asset('static/budget_app/js/dashboard.js') }}?v=20261121_03"></script>
 @endsection

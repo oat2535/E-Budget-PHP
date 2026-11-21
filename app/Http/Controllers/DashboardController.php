@@ -48,16 +48,20 @@ class DashboardController extends Controller
             $selectedCostCenter = $allowedCostCenters[0]['name'];
         }
 
-        return view('budget.dashboard', [
-            'allowed_branches' => $allowedBranches,
-            'selected_branch' => $selectedBranch,
-            'is_single_branch_locked' => count($allowedBranches) === 1,
-            'can_view_all_branches' => $canViewAll,
-            'budget_years' => $budgetYears,
-            'selected_year' => $selectedYear,
-            'allowed_cost_centers' => $allowedCostCenters,
-            'selected_cost_center' => $selectedCostCenter,
-        ]);
+        return response()
+            ->view('budget.dashboard', [
+                'allowed_branches' => $allowedBranches,
+                'selected_branch' => $selectedBranch,
+                'is_single_branch_locked' => count($allowedBranches) === 1,
+                'can_view_all_branches' => $canViewAll,
+                'budget_years' => $budgetYears,
+                'selected_year' => $selectedYear,
+                'allowed_cost_centers' => $allowedCostCenters,
+                'selected_cost_center' => $selectedCostCenter,
+            ])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     private function resolveDashboardPayloadOrError(Request $request): array
