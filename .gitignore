@@ -1,7 +1,7 @@
 # Environment & Secrets
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
 
 # PHP & Composer
 /vendor/
