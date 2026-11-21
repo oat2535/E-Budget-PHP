@@ -46,6 +46,11 @@ class BudgetCreateTest extends TestCase
     {
         $response = $this->actingAs($this->getTestUser())->get('/add_gl_entry');
         $response->assertStatus(200);
+        $gls = $response->viewData('general_ledgers_json') ?? [];
+        $this->assertNotEmpty($gls);
+        foreach ($gls as $gl) {
+            $this->assertTrue(str_starts_with($gl['gl_name'] ?? '', 'ค่าเสื่อม'), 'Add Expense view data must contain only GL starting with ค่าเสื่อม');
+        }
     }
 
     public function test_budget_add_revenue_renders(): void
@@ -203,6 +208,105 @@ class BudgetCreateTest extends TestCase
                 $rows = \App\Models\VetManpower::where('document_no', $docNo)->get();
                 foreach ($rows as $r) {
                     \App\Models\BudgetMonthlyDetail::where('vet_budget_id', $r->id)->delete();
+                    $r->delete();
+                }
+            }
+        }
+    }
+
+    public function test_expense_add_and_update_document_persists_to_database(): void
+    {
+        $adminUser = new User(['username' => 'admin']);
+        $adminUser->is_superuser = true;
+        $adminUser->is_admin = true;
+        $adminUser->bank_account_note = 'IT-ADMIN';
+
+        $session = [
+            'branch_info' => [
+                'branches' => ['HO'],
+                'needs_selection' => false,
+                'department_id' => 'IT',
+                'is_admin' => true,
+            ],
+        ];
+
+        $docNo = null;
+
+        try {
+            // Pick a depreciation GL code
+            $gl = \App\Models\GeneralLedgerMaster::where('gl_name', 'like', 'ค่าเสื่อม%')->first();
+            $glCode = $gl ? $gl->gl_code : '61300004';
+
+            $payload = [
+                [
+                    'branch_code' => 'HO',
+                    'cost_center_name' => 'Center',
+                    'general_ledger_code' => $glCode,
+                    'detail_note' => 'Initial Expense Note Test',
+                    'monthly_data' => [
+                        'jan' => ['amount' => 12000, 'cumulative_amount' => 12000, 'detail_note' => 'Jan Note'],
+                    ],
+                ],
+            ];
+
+            // 1. Create Document via POST /add_gl_entry
+            $response = $this->actingAs($adminUser)->withSession($session)->postJson('/add_gl_entry', $payload);
+            $response->assertStatus(200);
+            $response->assertJson(['status' => 'success']);
+
+            // 2. Verify in PostgreSQL that GlEntry and monthly data were inserted
+            $createdRow = \App\Models\GlEntry::where('create_eid', 'admin')
+                ->where('detail_note', 'Initial Expense Note Test')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $this->assertNotNull($createdRow, 'Created GlEntry row must exist in PostgreSQL');
+            $this->assertSame('PENDING', $createdRow->status);
+            $this->assertSame($glCode, $createdRow->general_ledger_code);
+            $docNo = $createdRow->document_no;
+            $this->assertNotEmpty($docNo);
+
+            $monthlyRow = \App\Models\GlEntryMonthlyDetail::where('gl_entry_id', $createdRow->id)
+                ->where('month', 1)
+                ->first();
+            $this->assertNotNull($monthlyRow, 'Created GlEntryMonthlyDetail must exist in PostgreSQL');
+            $this->assertEquals(12000, (float) $monthlyRow->amount);
+
+            // 3. Update Document via POST /api/document/update/GL Entry/{docNo}
+            $updatePayload = [
+                [
+                    'id' => $createdRow->id,
+                    'branch_code' => 'HO',
+                    'cost_center_name' => 'Center',
+                    'general_ledger_code' => $glCode,
+                    'detail_note' => 'Updated Expense Note In Database',
+                    'monthly_data' => [
+                        'jan' => ['amount' => 25000, 'cumulative_amount' => 25000, 'detail_note' => 'Jan Updated Note'],
+                    ],
+                ],
+            ];
+
+            $updateResp = $this->actingAs($adminUser)->withSession($session)->postJson("/api/document/update/GL Entry/{$docNo}", $updatePayload);
+            $updateResp->assertStatus(200);
+            $updateResp->assertJson(['status' => 'success']);
+
+            // 4. Verify in PostgreSQL that changes persisted
+            $updatedRow = $createdRow->fresh();
+            $this->assertSame('Updated Expense Note In Database', $updatedRow->detail_note);
+            $this->assertSame('PENDING', $updatedRow->status);
+
+            $updatedMonthly = \App\Models\GlEntryMonthlyDetail::where('gl_entry_id', $createdRow->id)
+                ->where('month', 1)
+                ->first();
+            $this->assertNotNull($updatedMonthly);
+            $this->assertEquals(25000, (float) $updatedMonthly->amount);
+            $this->assertSame('Jan Updated Note', $updatedMonthly->detail_note);
+        } finally {
+            // Clean up test data
+            if ($docNo) {
+                $rows = \App\Models\GlEntry::where('document_no', $docNo)->get();
+                foreach ($rows as $r) {
+                    \App\Models\GlEntryMonthlyDetail::where('gl_entry_id', $r->id)->delete();
                     $r->delete();
                 }
             }

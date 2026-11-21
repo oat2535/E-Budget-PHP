@@ -644,7 +644,7 @@ class BudgetService
         })->toArray();
     }
 
-    public static function getGeneralLedgersJson(?array $excludeCodes = null, ?string $nameStartswith = null): array
+    public static function getGeneralLedgersJson(?array $excludeCodes = null, ?string $nameStartswith = null, ?string $excludeNameStartswith = null): array
     {
         $query = GeneralLedgerMaster::query();
         if (! empty($excludeCodes)) {
@@ -652,6 +652,9 @@ class BudgetService
         }
         if ($nameStartswith !== null && $nameStartswith !== '') {
             $query->where('gl_name', 'like', "{$nameStartswith}%");
+        }
+        if ($excludeNameStartswith !== null && $excludeNameStartswith !== '') {
+            $query->where('gl_name', 'not like', "{$excludeNameStartswith}%");
         }
         return $query->orderBy('gl_code')->get()->map(function ($gl) {
             return [

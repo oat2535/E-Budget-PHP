@@ -994,10 +994,35 @@ class BudgetDocumentApiController extends Controller
 
     public function getGeneralLedgers(Request $request): JsonResponse
     {
-        $excludeCodes = ['60300002', '61300004', '61300010'];
+        $docType = trim((string) $request->query('doc_type', ''));
         $nameStartswith = $request->query('name_startswith');
-        $ledgers = BudgetService::getGeneralLedgersJson($excludeCodes, $nameStartswith);
-        return response()->json(['status' => 'success', 'data' => $ledgers]);
+
+        $allGls = BudgetService::getGeneralLedgersJson();
+        $expenseGls = BudgetService::getGeneralLedgersJson(null, 'ค่าเสื่อม');
+        $revenueGls = BudgetService::getGeneralLedgersJson(null, 'รายได้');
+
+        if ($docType === 'GL Entry' || $docType === 'EXPENSE') {
+            $targetGls = $expenseGls;
+        } elseif ($docType === 'Revenue') {
+            $targetGls = $revenueGls;
+        } elseif ($nameStartswith !== null && $nameStartswith !== '') {
+            $targetGls = BudgetService::getGeneralLedgersJson(null, $nameStartswith);
+        } else {
+            $targetGls = $expenseGls;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $targetGls,
+            'general_ledgers' => $targetGls,
+            'all_general_ledgers' => $allGls,
+            'by_doc_type' => [
+                'GL Entry' => $expenseGls,
+                'EXPENSE' => $expenseGls,
+                'Revenue' => $revenueGls,
+                'Budget Plan' => $allGls,
+            ],
+        ]);
     }
 
     public function keepalive(Request $request): JsonResponse

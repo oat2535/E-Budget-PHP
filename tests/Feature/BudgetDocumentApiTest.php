@@ -50,9 +50,22 @@ class BudgetDocumentApiTest extends TestCase
     public function test_general_ledgers_api(): void
     {
         $user = new User(['username' => 'test_officer']);
-        $response = $this->actingAs($user)->get('/api/general_ledgers');
+        $response = $this->actingAs($user)->get('/api/general_ledgers?doc_type=GL+Entry');
         $response->assertStatus(200);
         $response->assertJson(['status' => 'success']);
+
+        $data = $response->json('data') ?? [];
+        $this->assertNotEmpty($data);
+        foreach ($data as $gl) {
+            $this->assertTrue(str_starts_with($gl['gl_name'] ?? '', 'ค่าเสื่อม'), 'Expense GL list must contain only depreciation items starting with ค่าเสื่อม');
+        }
+
+        $byDocType = $response->json('by_doc_type') ?? [];
+        $this->assertArrayHasKey('GL Entry', $byDocType);
+        $this->assertArrayHasKey('EXPENSE', $byDocType);
+        foreach ($byDocType['GL Entry'] as $gl) {
+            $this->assertTrue(str_starts_with($gl['gl_name'] ?? '', 'ค่าเสื่อม'), 'by_doc_type GL Entry must contain only depreciation items');
+        }
     }
 
     public function test_check_duplicate_api_returns_ok_when_no_doc(): void

@@ -14,6 +14,12 @@ class DashboardTest extends TestCase
         return $user;
     }
 
+    protected function getTestBranchCode(): string
+    {
+        $branches = \App\Services\DashboardService::getTlphBranches();
+        return ! empty($branches) ? $branches[0]['code'] : 'HO';
+    }
+
     public function test_dashboard_unauthenticated_redirects_to_login(): void
     {
         $response = $this->get('/dashboard');
@@ -36,19 +42,21 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_data_api_invalid_year_returns_400(): void
     {
-        $response = $this->actingAs($this->getAdminUser())->getJson('/api/dashboard/data?branch=HO&year=invalid');
+        $branch = $this->getTestBranchCode();
+        $response = $this->actingAs($this->getAdminUser())->getJson("/api/dashboard/data?branch={$branch}&year=invalid");
         $response->assertStatus(400);
         $response->assertJson(['status' => 'error', 'message' => 'ปีงบประมาณไม่ถูกต้อง']);
     }
 
     public function test_dashboard_data_api_valid_single_branch(): void
     {
-        $response = $this->actingAs($this->getAdminUser())->getJson('/api/dashboard/data?branch=HO&year=2026');
+        $branch = $this->getTestBranchCode();
+        $response = $this->actingAs($this->getAdminUser())->getJson("/api/dashboard/data?branch={$branch}&year=2026");
         $response->assertStatus(200);
         $response->assertJson([
             'status' => 'ok',
             'branch' => [
-                'code' => 'HO',
+                'code' => $branch,
             ],
             'budget_year' => 2026,
         ]);
@@ -70,7 +78,8 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_export_api_returns_xlsx(): void
     {
-        $response = $this->actingAs($this->getAdminUser())->get('/api/dashboard/export?branch=HO&year=2026');
+        $branch = $this->getTestBranchCode();
+        $response = $this->actingAs($this->getAdminUser())->get("/api/dashboard/export?branch={$branch}&year=2026");
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $response->assertHeader('Content-Disposition');
