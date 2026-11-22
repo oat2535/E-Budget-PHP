@@ -5,8 +5,13 @@ use App\Http\Controllers\BudgetCreateController;
 use App\Http\Controllers\BudgetDocumentApiController;
 use App\Http\Controllers\BudgetListController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
+
+// System Diagnostics routes (supports both /dianosis and /diagnosis)
+Route::get('/dianosis', DiagnosisController::class)->name('system_dianosis');
+Route::get('/diagnosis', DiagnosisController::class)->name('system_diagnosis');
 
 // Guest / Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
