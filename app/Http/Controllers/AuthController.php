@@ -29,10 +29,12 @@ class AuthController extends Controller
         }
 
         $warning = session('warning');
+        $warningTitle = session('warning_title');
         $error = session('error');
 
         return view('auth.login', [
             'warning' => $warning,
+            'warning_title' => $warningTitle,
             'error' => $error,
         ]);
     }
